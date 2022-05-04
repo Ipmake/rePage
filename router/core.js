@@ -39,6 +39,7 @@ module.exports = class {
     {
         this.app.get('/', (req, res) => {
             log("debug", "Request handeled by index", "router")
+            if(config.router.ssl.enabled) return response.redirect("https://" + request.headers.host + request.url); 
 
             var host = req.get('host');
             var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress 
@@ -53,6 +54,7 @@ module.exports = class {
 
         this.app.all('*', (req, res) => {
             log("debug", "Request handeled by index", "router")
+            if(config.router.ssl.enabled) return response.redirect("https://" + request.headers.host + request.url); 
 
             var host = req.get('host');
             var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress 
@@ -69,14 +71,5 @@ module.exports = class {
         this.app.use((err, req, res, next) => {
             if(`${err}`.includes("no such file or directory")) return res.sendFile("404.html", { root: `./www/static` }), console.log(`${err}`) 
         });
-
-        this.app.use(function(request, response, next) {
-
-            if (config.router.ssl.enabled) {
-               return response.redirect("https://" + request.headers.host + request.url);
-            }
-        
-            next();
-        })
     }
 }
