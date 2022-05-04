@@ -1,6 +1,6 @@
 {
     "ssl": {
-        "enabled": true,
+        "enabled": false,
         "cert": "./router/certs/certificate.crt",
         "key": "./router/certs/private.key",
         "port": "443"
