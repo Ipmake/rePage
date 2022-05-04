@@ -40,7 +40,8 @@ module.exports = class {
         this.app.get('/', (req, res) => {
 
             const host = req.get('host');
-            const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress 
+            var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress 
+            if(ip.startsWith("www.")) ip = ip.replace("www.", "");
 
             log("debug", `${host} requested by ${ip}`, "router");
 
@@ -51,7 +52,8 @@ module.exports = class {
 
         this.app.all('*', (req, res) => {
             const host = req.get('host');
-            const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress 
+            var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress 
+            if(ip.startsWith("www.")) ip = ip.replace("www.", "");
 
             log("debug", `${host}/${req.originalUrl} requested by ${ip}`, "router");
 
