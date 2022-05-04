@@ -42,7 +42,7 @@ module.exports = class {
 
             var host = req.get('host');
             var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress 
-            if(host.includes("www.")) host = host.replace("www.", "");
+            if(config.router.ignoreWWW) host = host.replace("www.", "");
 
             log("debug", `${host} requested by ${ip}`, "router");
 
@@ -56,7 +56,7 @@ module.exports = class {
 
             var host = req.get('host');
             var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress 
-            if(host.includes("www.")) host = host.replace("www.", "");
+            if(config.router.ignoreWWW) host = host.replace("www.", "");
 
             log("debug", `${host}/${req.originalUrl} requested by ${ip}`, "router");
 
