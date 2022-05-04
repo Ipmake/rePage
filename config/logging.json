@@ -1,0 +1,6 @@
+{
+    "debugMode": true,
+
+    "logToFile": true,
+    "logToConsole": true
+}
