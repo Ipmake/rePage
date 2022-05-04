@@ -38,10 +38,11 @@ module.exports = class {
     register()
     {
         this.app.get('/', (req, res) => {
+            log("debug", "Request handeled by index", "router")
 
-            const host = req.get('host');
+            var host = req.get('host');
             var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress 
-            if(ip.startsWith("www.")) ip = ip.replace("www.", "");
+            if(host.includes("www.")) host = host.replace("www.", "");
 
             log("debug", `${host} requested by ${ip}`, "router");
 
@@ -51,9 +52,11 @@ module.exports = class {
         });
 
         this.app.all('*', (req, res) => {
-            const host = req.get('host');
+            log("debug", "Request handeled by index", "router")
+
+            var host = req.get('host');
             var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress 
-            if(ip.startsWith("www.")) ip = ip.replace("www.", "");
+            if(host.includes("www.")) host = host.replace("www.", "");
 
             log("debug", `${host}/${req.originalUrl} requested by ${ip}`, "router");
 
