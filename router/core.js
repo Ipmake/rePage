@@ -39,7 +39,7 @@ module.exports = class {
     {
         this.app.get('/', (req, res) => {
             log("debug", "Request handeled by index", "router")
-            if(config.router.ssl.enabled) return response.redirect("https://" + request.headers.host + request.url); 
+            if(config.router.ssl.enabled) if(req.protocol !== 'https') return res.redirect("https://" + req.headers.host + req.url); 
 
             var host = req.get('host');
             var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress 
@@ -54,7 +54,7 @@ module.exports = class {
 
         this.app.all('*', (req, res) => {
             log("debug", "Request handeled by index", "router")
-            if(config.router.ssl.enabled) return response.redirect("https://" + request.headers.host + request.url); 
+            if(config.router.ssl.enabled) if(req.protocol !== 'https') return res.redirect("https://" + req.headers.host + req.url); 
 
             var host = req.get('host');
             var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress 
