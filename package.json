@@ -1,0 +1,11 @@
+{
+  "name": "repage",
+  "version": "0.1.0",
+  "description": "A web server made in Node.js",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ."
+  },
+  "author": "",
+  "license": "MIT"
+}
