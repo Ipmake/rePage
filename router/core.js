@@ -69,5 +69,14 @@ module.exports = class {
         this.app.use((err, req, res, next) => {
             if(`${err}`.includes("no such file or directory")) return res.sendFile("404.html", { root: `./www/static` }), console.log(`${err}`) 
         });
+
+        this.app.use(function(request, response, next) {
+
+            if (config.router.ssl.enabled) {
+               return response.redirect("https://" + request.headers.host + request.url);
+            }
+        
+            next();
+        })
     }
 }
