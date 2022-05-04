@@ -49,14 +49,14 @@ module.exports = class {
             
         });
 
-        this.app.get('/:file', (req, res) => {
+        this.app.all('*', (req, res) => {
             const host = req.get('host');
             const ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress 
 
-            log("debug", `${host}/${req.params.file} requested by ${ip}`, "router");
+            log("debug", `${host}/${req.originalUrl} requested by ${ip}`, "router");
 
 
-            res.sendFile(req.params.file, { root: `./www/${host}` })
+            res.sendFile(req.originalUrl, { root: `./www/${host}` })
             
         });
 
