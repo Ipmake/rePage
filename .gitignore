@@ -12,6 +12,7 @@ report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
 # Web docs and certs
 *.crt
 *.key
+www/
 
 # Runtime data
 pids
