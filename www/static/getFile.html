@@ -147,10 +147,53 @@ html,body{
             
         </div> 
     <script>
-        var path = window.location.pathname;
-        
-        //check if the file exists
-        
+        var url = window.location.href;
+
+        var xhr = new XMLHttpRequest();
+        xhr.open('GET', url+ "/index.html", true);
+        xhr.send();
+
+        xhr.onreadystatechange = function() {
+            if (xhr.readyState == 4) {
+                if (xhr.status == 200) {
+                    //if the file exist then redirect to the file
+                    return window.location.href = url + "/index.html";
+                } 
+                else {
+                    document.write(`
+                    
+                    <div class="container" style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; flex-direction: column;">
+                        <img src='http://cdn.ipgg.net/IPGsystems.png' width='200px' height='200px' style='border-radius: 50%;'/>
+                        <h1>RePage Webserver</h1>
+                        <h2>The page you are trying to view does not have an index.html file</h2>
+                        <h3>Please try again later or contact the site owner</h3>
+
+                    </div>
+
+
+                    `)
+
+                    document.getElementsByTagName("h1")[0].style.textAlign = "center";
+                    document.getElementsByTagName("h2")[0].style.textAlign = "center";
+
+                    //import ubuntu font 
+                    var link = document.createElement("link");
+                    link.href = "https://fonts.googleapis.com/css?family=Ubuntu";
+                    link.rel = "stylesheet";
+                    link.type = "text/css";
+                    document.getElementsByTagName("head")[0].appendChild(link);
+                    document.getElementsByTagName("h1")[0].style.fontFamily = "Ubuntu";
+                    document.getElementsByTagName("h2")[0].style.fontFamily = "Ubuntu";
+                    document.getElementsByTagName("h3")[0].style.fontFamily = "Ubuntu";
+                    
+
+                    //change the page head title to
+                    document.title = "RePage Webserver"
+
+                }
+            }
+        }
+
     </script>
 </body>
 </html>

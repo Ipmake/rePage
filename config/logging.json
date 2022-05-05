@@ -1,5 +1,7 @@
 {
     "debugMode": true,
+    "logConnections": true,
+    "logCache": true,
 
     "logToFile": true,
     "logToConsole": true

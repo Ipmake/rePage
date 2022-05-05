@@ -36,6 +36,16 @@ module.exports = async (category, message, origin) => {
             if(logconfig.logToConsole) console.log(chalk.yellow(`[${category}/${origin}] ${message}`));
             break;
 
+        case 'connection':
+            if(!logconfig.logConnections) return;
+            if(logconfig.logToConsole) console.log(chalk.cyan(`[${category}/${origin}] ${message}`));
+            break;
+        
+        case 'cache':
+            if(!logconfig.logCache) return;
+            if(logconfig.logToConsole) console.log(chalk.magenta(`[${category}/${origin}] ${message}`));
+            break;
+
         case 'sysOK':
             const offset = 10 - origin.length
 

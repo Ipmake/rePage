@@ -1,4 +1,5 @@
 {
-    "ipgg.net": "./www/ipgg.net",
-    "ipgg.xyz": "./www/ipgg.xyz"
+    "redirects": [
+        { "host": "localhost", "dir": "/github", "target": "https://github.com/Ipmake123/rePage"}
+    ]
 }
