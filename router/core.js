@@ -39,13 +39,15 @@ module.exports = class {
     {
         this.app.get('/', (req, res) => {
             log("debug", "Request handeled by index", "router")
-            if(config.router.ssl.enabled) if(req.protocol !== 'https') return res.redirect("https://" + req.headers.host + req.url); 
+            if(config.router.ssl.enforce) if(req.protocol !== 'https') return res.redirect("https://" + req.headers.host + req.url); 
 
             var host = req.get('host');
             var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress 
             if(config.router.ignoreWWW) host = host.replace("www.", "");
 
             log("debug", `${host} requested by ${ip}`, "router");
+
+            
 
 
             res.sendFile("index.html", { root: `./www/${host}` });  
@@ -54,7 +56,7 @@ module.exports = class {
 
         this.app.all('*', (req, res) => {
             log("debug", "Request handeled by index", "router")
-            if(config.router.ssl.enabled) if(req.protocol !== 'https') return res.redirect("https://" + req.headers.host + req.url); 
+            if(config.router.ssl.enforce) if(req.protocol !== 'https') return res.redirect("https://" + req.headers.host + req.url); 
 
             var host = req.get('host');
             var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress 
@@ -62,6 +64,9 @@ module.exports = class {
 
             log("debug", `${host}/${req.originalUrl} requested by ${ip}`, "router");
 
+
+            //check wether the requested url is a directory
+            if(fs.lstatSync(`./www/${host}${req.originalUrl}`).isDirectory()) return res.sendFile("getFile.html", { root: `./www/static` }), console.log(`${err}`) 
 
             res.sendFile(req.originalUrl, { root: `./www/${host}` })
             
