@@ -6,7 +6,6 @@ RePage is a multiple domain Webserver focused on customization. Host your own we
 
 ## INSTALATION
 **Ubuntu**
-Singel command installation:
 ```
 wget --no-check-certificate http://repage.ipgg.net/rePage_installer.sh && chmod +x rePage_installer.sh && ./rePage_installer.sh
 ```
