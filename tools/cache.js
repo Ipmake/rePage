@@ -8,35 +8,10 @@ module.exports = class {
         constructor() {
             //
             this.routes = new enmap()
+            this.commands = new enmap()
             //
+            this.init()
 
-            log('system', 'Initializing cache...', 'cache')
-            const routeFile = require("../router/routes.json")
-            var redirects = 0
-    
-            for (let c of routeFile.redirects) {
-                
-                const prev = this.routes.get(c.host)
-                if(prev) 
-                {
-                    redirects++;
-                    c.dir = c.dir.replaceAll("/", "_")
-                    eval(`prev.${c.dir} = '${c.target}'`)
-                    this.routes.set(c.host, prev)
-                } else 
-                {  
-                    redirects++;
-                    const data = {}
-                    c.dir = c.dir.replaceAll("/", "_")
-                    eval(`data.${c.dir} = '${c.target}'`)
-                    this.routes.set(c.host, data)
-                }
-                
-    
-            }
-    
-            log('system', `Initialized ${redirects} routes`, 'cache')
-            log('sysOK', 'Cache initialized', 'cache')
         }
 
         get(category, item) {
@@ -53,5 +28,52 @@ module.exports = class {
                 break;
             }
             
+        }
+    
+        init() {
+            this.routes.clear()
+            this.commands.clear()
+
+            log('system', 'Initializing cache...', 'cache')
+            var routeFile = JSON.parse(fs.readFileSync('./router/routes.json', 'utf8'))
+            var redirects = 0
+    
+            for (let c of routeFile.redirects) {
+                
+                const prev = this.routes.get(c.host)
+                if(prev) 
+                {
+                    redirects++;
+                    c.dir = c.dir.replaceAll("/", "_")
+                    eval(`prev.${c.dir} = '${c.target}'`)
+                    log('debug', `Redirect ${c.host}${c.dir.replaceAll("_", "/")} to ${c.target} has been added to cache`, 'cache')
+                    this.routes.set(c.host, prev)
+                } else 
+                {  
+                    redirects++;
+                    const data = {}
+                    c.dir = c.dir.replaceAll("/", "_")
+                    eval(`data.${c.dir} = '${c.target}'`)
+                    log('debug', `Redirect ${c.host}${c.dir.replaceAll("_", "/")} to ${c.target} has been added to cache`, 'cache')
+                    this.routes.set(c.host, data)
+                }
+                
+    
+            }
+            
+            const commands = fs.readdirSync("./tools/commands/")
+            for (let c of commands) {
+                if(!c.endsWith(".js")) continue;
+
+                const command = c.replace(".js", "")
+                const commandFile = require(`./commands/${c}`)
+
+
+                this.commands.set(command, commandFile)
+            }
+
+
+            log('system', `Initialized ${redirects} routes`, 'cache')
+            log('sysOK', 'Cache initialized', 'cache')
         }
     }

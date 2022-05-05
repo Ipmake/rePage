@@ -47,17 +47,21 @@ module.exports = async (category, message, origin) => {
             break;
 
         case 'sysOK':
-            const offset = 10 - origin.length
+            const offset = 15 - origin.length
 
             const offsetString = ' '.repeat(offset);
             if(logconfig.logToConsole) console.log(chalk.blue(`[${origin}] ${offsetString} | ${chalk.green("OK")}`));
             break;
 
         case 'sysERROR':
-            const erroffset = 10 - origin.length
+            const erroffset = 15 - origin.length
 
             const erroffsetString = ' '.repeat(offset);
             if(logconfig.logToConsole) console.log(chalk.blue(`[${origin}] ${erroffsetString} | ${chalk.red("ERROR")}`));
+            break;
+
+        case 'syntax':
+            if(logconfig.logToConsole) console.log(chalk.bgRed(chalk.white(`[${category}/${origin}] ${message}`)));
             break;
 
     }

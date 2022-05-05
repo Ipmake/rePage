@@ -64,9 +64,10 @@ module.exports = class {
             if(!host.includes("cdn")) if(config.router.ssl.enforce) if(req.protocol !== 'https') return res.redirect("https://" + req.headers.host + req.url); 
 
             if(config.router.ignoreWWW) host = host.replace("www.", "");
+            if(req.originalUrl.endsWith("/")) req.originalUrl = req.originalUrl.slice(0, -1);
 
             log("connection", `${host}${req.originalUrl} requested by ${ip}`, "router");
-
+            
             const route = this.cache.get('routes', host)
             if(route) {
                 try {
