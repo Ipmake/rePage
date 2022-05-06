@@ -3,7 +3,6 @@ const path = require('path');
 
 var configs = {}
 
-console.log(__dirname)
 fs.readdirSync(__dirname).forEach(file => {
 
     if (!file.endsWith('.json')) return;
