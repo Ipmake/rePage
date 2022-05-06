@@ -40,6 +40,7 @@ module.exports = class {
     {
         this.app.get('/', async (req, res) => {
 
+        try {
             if(config.router.ssl.enforce) if(req.protocol !== 'https') return res.redirect("https://" + req.headers.host + req.url); 
 
             var host = req.get('host');
@@ -54,44 +55,100 @@ module.exports = class {
 
             res.sendFile("index.html", { root: `./www/${host}` }), log("debug", `${ip} requested ${req.originalUrl} of ${host}`, "router", { url: req.originalUrl, host: host, ip: ip });
             
+        }
+        catch(e) {
+            log("error", e, "router");
+            return res.sendStatus(500);
+        }
         });
 
         this.app.all('*', async (req, res) => {
 
-            var host = req.get('host');
-            var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress 
+            try {
+                var host = req.get('host');
+                var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress 
+                
+                if(!host.includes("cdn")) if(config.router.ssl.enforce) if(req.protocol !== 'https') return res.redirect("https://" + req.headers.host + req.url); 
+                
+                if(config.router.ignoreWWW) host = host.replace("www.", "");
+                if(req.originalUrl.endsWith("/")) req.originalUrl = req.originalUrl.slice(0, -1);
+                if(req.originalUrl.startsWith("/repage")) return this.interface(host, ip, req, res);
 
-            if(!host.includes("cdn")) if(config.router.ssl.enforce) if(req.protocol !== 'https') return res.redirect("https://" + req.headers.host + req.url); 
-
-            if(config.router.ignoreWWW) host = host.replace("www.", "");
-            if(req.originalUrl.endsWith("/")) req.originalUrl = req.originalUrl.slice(0, -1);
-
-            log("connection", `${host}${req.originalUrl} requested by ${ip}`, "router");
-            
-            const route = this.cache.get('routes', host)
-            if(route) {
-                try {
-                    let url = req.originalUrl.replaceAll("/", "_")
-                    let target = eval(`route.${url}`)
-                    if(target) return res.redirect(target), log("debug", `${ip} was redirected from ${req.originalUrl} to ${target} of ${host}`, "router");
-                } catch(e) {  }
+                log("connection", `${host}${req.originalUrl} requested by ${ip}`, "router");
+                
+                const route = this.cache.get('routes', host)
+                if(route) {
+                    try {
+                        let url = req.originalUrl.replaceAll("/", "_")
+                        let target = eval(`route.${url}`)
+                        if(target) return res.redirect(target), log("debug", `${ip} was redirected from ${req.originalUrl} to ${target} of ${host}`, "router");
+                    } catch(e) {  }
+                }
+    
+                //check wether the requested file exists. If it doesn't exist, send a 404 status
+                if(!fs.existsSync(`./www/${host}${req.originalUrl}`)) return res.status(404).sendFile("404.html", { root: `./www/static` }), log("debug", `404 - ${ip} tried to view ${req.originalUrl} but it doesn't exist`, "router", { url: req.originalUrl, host: host, ip: ip });
+                
+                //check wether the requested url is a directory
+                if(fs.lstatSync(`./www/${host}${req.originalUrl}`).isDirectory()) return res.status(404).sendFile("getFile.html", { root: `./www/static` }), log("debug", `404 - ${ip} received the index finder`, "router", { url: req.originalUrl, host: host, ip: ip });
+    
+    
+    
+                res.sendFile(req.originalUrl, { root: `./www/${host}` }), log("debug", `${ip} requested ${req.originalUrl} of ${host}`, "router", { url: req.originalUrl, host: host, ip: ip });
+                
+            }
+            catch(e) {
+                log("error", e, "router");
+                return res.sendStatus(500);
             }
 
-            //check wether the requested file exists. If it doesn't exist, send a 404 status
-            if(!fs.existsSync(`./www/${host}${req.originalUrl}`)) return res.status(404).sendFile("404.html", { root: `./www/static` }), log("debug", `404 - ${ip} tried to view ${req.originalUrl} but it doesn't exist`, "router", { url: req.originalUrl, host: host, ip: ip });
-            
-            //check wether the requested url is a directory
-            if(fs.lstatSync(`./www/${host}${req.originalUrl}`).isDirectory()) return res.status(404).sendFile("getFile.html", { root: `./www/static` }), log("debug", `404 - ${ip} received the index finder`, "router", { url: req.originalUrl, host: host, ip: ip });
-
-
-
-            res.sendFile(req.originalUrl, { root: `./www/${host}` }), log("debug", `${ip} requested ${req.originalUrl} of ${host}`, "router", { url: req.originalUrl, host: host, ip: ip });
-            
         });
 
 
         this.app.use((err, req, res, next) => {
             if(`${err}`.includes("no such file or directory")) return res.sendFile("404.html", { root: `./www/static` }), console.log(`${err}`) 
         });
+    }
+
+    interface(host, ip, req, res) {
+        log("connection", `${ip} connected to the interface on ${req.originalUrl}`, "router");
+        req.originalUrl = req.originalUrl.replace("/repage", "/");
+
+        if(req.originalUrl.includes("api")) {
+            return this.api(host, ip, req, res);
+        }
+        
+        switch(req.originalUrl) {
+            case " ":
+                return res.sendFile("index.html", { root: `./www/static/interface` });
+                break;
+            case "/":
+                return res.sendFile("index.html", { root: `./www/static/interface` });
+                break;
+            case "//":
+                return res.sendFile("index.html", { root: `./www/static/interface` });
+                break;
+            case "//index.html":
+                return res.sendFile("index.html", { root: `./www/static/interface` });
+                break;
+                
+        }
+
+
+        res.sendFile(req.originalUrl, { root: `./www/static/interface` });
+    }
+
+    api(host, ip, req, res) {
+        log("connection", `${ip} connected to the api on ${req.originalUrl}`, "router");
+
+        var url = req.originalUrl.split("/");
+        //shift the array a certain amount of time
+        url.splice(0, url.indexOf("api"))
+        
+        switch(url[1]) {
+            case "login":
+                if(config.system.adminPW === req.body.pw) return res.sendStatus(200);
+                else return res.sendStatus(401);
+            break;
+        }
     }
 }

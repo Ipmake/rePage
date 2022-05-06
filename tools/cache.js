@@ -40,6 +40,7 @@ module.exports = class {
     
             for (let c of routeFile.redirects) {
                 
+                if(c.dir === '/repage' || c.dir === '/repage/') return console.error('ERROR: /repage is reserved for the RePage webserver.')
                 const prev = this.routes.get(c.host)
                 if(prev) 
                 {
