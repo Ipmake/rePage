@@ -2,12 +2,14 @@ const config = require('../config/configs');
 const log = require('../tools/log');
 const express = require('express');
 const fs = require('fs')
+const api = require('./api');
 
 
 module.exports = class {
     constructor(systemdata, cache){
         this.systemdata = systemdata;
         this.cache = cache;
+        this.api = api;
         this.app = express();
         this.app.use(express.json());
 
@@ -114,7 +116,7 @@ module.exports = class {
         req.originalUrl = req.originalUrl.replace("/repage", "/");
 
         if(req.originalUrl.includes("api")) {
-            return this.api(host, ip, req, res);
+            return this.api(host, ip, req, res, this.cache);
         }
         
         switch(req.originalUrl) {
@@ -137,18 +139,4 @@ module.exports = class {
         res.sendFile(req.originalUrl, { root: `./www/static/interface` });
     }
 
-    api(host, ip, req, res) {
-        log("connection", `${ip} connected to the api on ${req.originalUrl}`, "router");
-
-        var url = req.originalUrl.split("/");
-        //shift the array a certain amount of time
-        url.splice(0, url.indexOf("api"))
-        
-        switch(url[1]) {
-            case "login":
-                if(config.system.adminPW === req.body.pw) return res.sendStatus(200);
-                else return res.sendStatus(401);
-            break;
-        }
-    }
 }

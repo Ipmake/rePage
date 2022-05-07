@@ -70,12 +70,17 @@
             xhr.open("POST", "/repage/api/login", true);
             xhr.setRequestHeader('Content-Type', 'application/json');
             xhr.send(JSON.stringify({
-                pw: password.value
+                username: username.value,
+                password: password.value
             }));
 
             xhr.onreadystatechange = function() {
                 if (this.readyState == 4 && this.status == 200) {
                     //if the response is 200, redirect to the index page
+
+                    localStorage.setItem("username", username.value);
+                    localStorage.setItem("password", password.value);
+
                     window.location.href = "/repage/dashboard.html";
                 } else {
                     //if the response is not 200, shake the elements
