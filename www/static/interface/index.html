@@ -146,9 +146,9 @@
         <script>
             //check if the user has a username and a token set in their localstorage
             var username = localStorage.getItem('username');
-            var token = localStorage.getItem('token');
+            var password = localStorage.getItem('password');
 
-            if(username && token)  window.location.href = './dashboard.html';
+            if(username && password)  window.location.href = '/repage/dashboard.html';
             else  window.location.href = '/repage/login.html';
         </script>
 </body>

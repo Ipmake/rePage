@@ -112,7 +112,8 @@ module.exports = class {
     }
 
     interface(host, ip, req, res) {
-        log("connection", `${ip} connected to the interface on ${req.originalUrl}`, "router");
+        if(config.logging.logAPIRequests) log("connection", `${ip} connected to the interface on ${req.originalUrl}`, "router");
+        
         req.originalUrl = req.originalUrl.replace("/repage", "/");
 
         if(req.originalUrl.includes("api")) {

@@ -2,6 +2,7 @@
     "debugMode": true,
     "logConnections": true,
     "logCache": true,
+    "logAPIRequests": false,
 
     "logToFile": true,
     "logToConsole": true

@@ -1,100 +1,99 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
-    <title>RePage Webserver - Login</title>
-</head>
+<html lang="en" class="h-100">
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="keywords" content="" />
+        <meta name="author" content="" />
+        <meta name="robots" content="" />
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="description" content="RePage, the free open sourse webserver" />
+        <meta property="og:title" content="RePage Admin" />
+        <meta property="og:description" content="RePage, the free open sourse webserver" />
+        <meta property="og:image" content="https://cdn.ipgg.net/IPGsystems.png" />
+        <meta name="format-detection" content="telephone=no">
+        
+        <!-- PAGE TITLE HERE -->
+        <title>RePage Webserver</title>
+        
+        <!-- FAVICONS ICON -->
+        <link rel="shortcut icon" type="image/png" href="images/logo.png" />
+        
+        <!-- Style css -->
+        <link href="./css/style.css" rel="stylesheet">
+        
+    </head>
 
-<style>
-    *{
-        transition: all ease-in-out 0.25s;
-    }
-
-    .btn:hover{
-        background-color: #ffffff;
-    }
-
-    .shake {
-         border: 3.5px solid red;
-    }
-</style>
-
-
-
-
-<body style="background-color: black;">
-
-
-
-    <div style="display: flex; justify-content: center; align-items: center; width: 100vw; height:100vh; flex-direction: column;">
-        <div class="container" style="width: 400px; height: 600px; border-radius: 2%; display: flex; align-items: center; justify-content: center; flex-direction: column; gap: 1rem; background-color: #23272A ;">
-            <img src="http://cdn.ipgg.net/IPGsystems.png" width="200" height="200" style="border-radius: 50%; margin-bottom: 50px;"/>
-            <input type="text" name="username" placeholder="Username" class="form-control" style="width: 70%; border-radius: 15px;" />
-            <input type="password" name="password" placeholder="Password" class="form-control" style="width: 70%; border-radius: 15px;" />
-            <button id="login" onclick="click()" class="btn btn-primary" style="background-color: #4E5D94; color: white; border-radius: 15px; width: 50%; margin-top: 10px;">Login</button>
+<body class="vh-100">
+    <div class="authincation h-100">
+        <div class="container h-100">
+            <div class="row justify-content-center h-100 align-items-center">
+                <div class="col-md-6">
+                    <div class="authincation-content">
+                        <div class="row no-gutters">
+                            <div class="col-xl-12">
+                                <div class="auth-form">
+									<div class="text-center mb-3">
+										<a><img src="images/logo_medium.png" alt=""></a>
+									</div>
+                                    <h4 class="text-center mb-4">Log in to your RePage Webserver</h4>
+                                    <p id="Incorrect" style="color: red;"></p>
+                                        <div class="mb-3">
+                                            <label class="mb-1"><strong>Username</strong></label>
+                                            <input id="username" type="text" class="form-control" value="">
+                                        </div>
+                                        <div class="mb-3">
+                                            <label class="mb-1"><strong>Password</strong></label>
+                                            <input id="password" type="password" class="form-control" value="">
+                                        </div>
+                                        <div class="text-center">
+                                            <button onclick="login()" type="submit" class="btn btn-primary btn-block">Login</button>
+                                        </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
+
+    <!--**********************************
+        Scripts
+    ***********************************-->
+    <!-- Required vendors -->
+    <script src="./vendor/global/global.min.js"></script>
+    <script src="./js/custom.min.js"></script>
+    <script src="./js/dlabnav-init.js"></script>
+	<script src="./js/styleSwitcher.js"></script>
     <script>
-        document.getElementById("login").addEventListener("click", click);
+        function login(){
+            var username = document.getElementById("username").value;
+            var password = document.getElementById("password").value;
 
-        function click() {
-        //get the username and password
-        var username = document.getElementsByName("username")[0];
-        var password = document.getElementsByName("password")[0];
-    
-        //apply the shake class to the elemnts if they are empty and remove the class again 1 second later
-        if(username.value == ""){
-            username.classList.add("shake");
-            setTimeout(function(){
-                username.classList.remove("shake");
-            }, 1000);
-        }
-
-        if(password.value == ""){
-            password.classList.add("shake");
-            setTimeout(function(){
-                password.classList.remove("shake");
-            }, 1000);
-        }
-
-
-        if(username.value != "" && password.value != ""){
-            //send a post request to the server and await a 200 response
-            var xhr = new XMLHttpRequest();
-            xhr.open("POST", "/repage/api/login", true);
-            xhr.setRequestHeader('Content-Type', 'application/json');
-            xhr.send(JSON.stringify({
-                username: username.value,
-                password: password.value
-            }));
-
-            xhr.onreadystatechange = function() {
-                if (this.readyState == 4 && this.status == 200) {
-                    //if the response is 200, redirect to the index page
-
-                    localStorage.setItem("username", username.value);
-                    localStorage.setItem("password", password.value);
-
-                    window.location.href = "/repage/dashboard.html";
-                } else {
-                    //if the response is not 200, shake the elements
-                    username.classList.add("shake");
-                    password.classList.add("shake");
-                    setTimeout(function(){
-                        username.classList.remove("shake");
-                        password.classList.remove("shake");
-                    }, 1000);
-                }
+            if(username == "" || password == ""){
+                return document.getElementById("Incorrect").innerHTML = "Please fill in all fields";
             }
-        }
-    }
-    </script>
+            
+                var xhttp = new XMLHttpRequest();
+                xhttp.open("POST", "/repage/api/login", true);
+                xhttp.setRequestHeader("Content-type", "application/json");
 
+                xhttp.send(JSON.stringify({username: username, password: password}));
+
+
+                xhttp.onreadystatechange = function() {
+                    if (this.readyState == 4 && this.status == 200) {
+                        localStorage.setItem("username", username);
+                        localStorage.setItem("password", password);
+                        document.location.href = "/repage/index.html";
+                    }
+                    else if (this.readyState == 4 && this.status == 401) {
+                        document.getElementById("Incorrect").innerHTML = "Incorrect username or password";
+                    }
+                };
+        }
+    </script>
 </body>
 </html>
