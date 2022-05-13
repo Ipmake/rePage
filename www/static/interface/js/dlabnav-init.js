@@ -33,13 +33,13 @@ function getUrlParams(dParam)
     } */
 	
 	dlabSettingsOptions = {
-		typography: "poppins",
+		typography: "roboto",
 		version: "dark",
 		layout: "vertical",
 		primary: "color_14",
 		headerBg: "color_1",
-		navheaderBg: "color_14",
-		sidebarBg: "color_12",
+		navheaderBg: "color_3",
+		sidebarBg: "color_1",
 		sidebarStyle: "full",
 		sidebarPosition: "fixed",
 		headerPosition: "fixed",

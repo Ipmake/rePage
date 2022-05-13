@@ -1,4 +1,4 @@
- var Workload = function(){
+ var ipgg = function(){
 	 "use strict"
 	/* Search Bar ============ */
 	var screenWidth = $( window ).width();
@@ -415,7 +415,7 @@
 jQuery(document).ready(function() {
 	$('[data-bs-toggle="popover"]').popover();
     'use strict';
-	Workload.init();
+	ipgg.init();
 	
 });
 /* Document.ready END */
@@ -423,9 +423,9 @@ jQuery(document).ready(function() {
 /* Window Load START */
 jQuery(window).on('load',function () {
 	'use strict'; 
-	Workload.load();
+	ipgg.load();
 	setTimeout(function(){
-			Workload.handleMenuPosition();
+			ipgg.handleMenuPosition();
 	}, 1000);
 	
 });
@@ -433,9 +433,9 @@ jQuery(window).on('load',function () {
 /* Window Resize START */
 jQuery(window).on('resize',function () {
 	'use strict'; 
-	Workload.resize();
+	ipgg.resize();
 	setTimeout(function(){
-			Workload.handleMenuPosition();
+			ipgg.handleMenuPosition();
 	}, 1000);
 });
 /*  Window Resize END */

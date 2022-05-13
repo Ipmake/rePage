@@ -33,9 +33,6 @@
 
 	
 </head>
-<script>
-	if(!localStorage.getItem('username') || !localStorage.getItem('password') || !localStorage.getItem('group')) document.location.href = '/repage/login.html';
-</script>
 <body>
 
     <!--*******************
@@ -87,7 +84,7 @@
                     <div class="collapse navbar-collapse justify-content-between">
                         <div class="header-left">
 							<div class="dashboard_bar">
-                                Dashboard
+                                Hosts
                             </div>
                         </div>
                         <ul class="navbar-nav header-right">
@@ -99,7 +96,7 @@
 										<small class="fs-12 font-w400" id="group"></small>
                                         <script>
 											window.onload = function() {
-												if(!localStorage.getItem("username") || !localStorage.getItem("group")) 
+												if(!localStorage.getItem('username') || !localStorage.getItem('password') || !localStorage.getItem('group'))
 												{
 													swal({
 														title: "Error, username or group invalid",
@@ -203,48 +200,155 @@
 		<!--**********************************
             Content body start
         ***********************************-->
-        <div class="content-body">
-            <!-- row -->
-			<div class="container-fluid">
-				<div class="row">
-					<div class="col-xl-12">
-						<div class="row">
-							<div class="col-xl-12">
-								<div class="row">
 
-
-									<div class="col-xl-6 col-sm-6 col-xxl-6">
-										<div class="card">
-											<div class="card-body" style="display: flex; flex-direction: column; align-items: center; ">
-												<h1 class="text-center">CPU</h1>
-												<div id="gaugeCPU" style="width: 90%; display: flex; align-items: center; justify-content: center; flex-direction: column;"> <div class="gauge" width="200px" height="200px"> <div class="gauge__body"> <div class="gauge__fill"></div> <div class="gauge__cover"></div> </div> </div> </div>
-											</div>
-										</div>
-									</div>
-
-									<div class="col-xl-6 col-sm-6 col-xxl-6">
-										<div class="card">
-											<div class="card-body" style="display: flex; flex-direction: column; align-items: center; ">
-												<h1 class="text-center">Memory</h1>
-												<div id="gaugeMEM" style="width: 90%; display: flex; align-items: center; justify-content: center; flex-direction: column;"> <div class="gauge" width="200px" height="200px"> <div class="gauge__body"> <div class="gauge__fill"></div> <div class="gauge__cover"></div> </div> </div> </div>
-											</div>
-										</div>
-									</div>
-
-
-								</div>
+		<div class="content-body">
+			<!-- Create a bootstrap data table -->
+			<div class="row">
+				<div class="col-12">
+					<div class="card">
+						<div class="card-body">
+							<div class="card-title">
+								<h3 class="text-center">Hosts</h3>
 							</div>
+							<!-- add an add button at the right side -->
+							<div class="text-right" style="display:flex; justify-content: flex-end;">
+								<a href="/repage/createhost.html" type="button" class="btn btn-primary" data-toggle="modal">
+									<i class="fas fa-plus"></i>
+									<span class="ml-2">Add Host</span>
+								</a>
+							</div>
+							
+							<div class="table-responsive">
+								<table class="table header-border table-hover verticle-middle">
+									<thead>
+										<tr>
+											<th scope="col">Host</th>
+											<th scope="col">Directory</th>
+											<th scope="col">SSL</th>
+											<th scope="col">Owner</th>
+											<th scope="col">Group</th>
+											<th scope="col">Actions</th>
+										</tr>
+									</thead>
+									<tbody id="hostlist">
+										<!-- Hosts will be loaded here -->
 
+
+									</tbody>
+									<script>
+										(async () => {
+											const username = await localStorage.getItem("username");
+											const password = await localStorage.getItem("password");
+
+											if(!localStorage.getItem('username') || !localStorage.getItem('password')) document.location.href = '/repage/login.html';
+
+											const hosts = document.getElementById('hostlist');
+
+											var xhr = new XMLHttpRequest();
+											xhr.open("POST", "/repage/api/hosts", true);
+											xhr.setRequestHeader('Content-Type', 'application/json');
+											xhr.send(JSON.stringify({
+												username: username,
+												password: password
+											}));
+
+											xhr.onload = function() {
+												if (xhr.status === 200) {
+													const response = JSON.parse(xhr.responseText)
+
+													for(let c of response.hosts) {
+														const tr = document.createElement('tr');
+														const td1 = document.createElement('td');
+														const td1a = document.createElement('a');
+														const td2 = document.createElement('td');
+														const td3 = document.createElement('td');
+														const td4 = document.createElement('td');
+														const td5 = document.createElement('td');
+														const td6 = document.createElement('td');
+
+														tr.id = c.host;
+
+														td1a.innerHTML = c.host
+														td1a.href = `http://${c.host}`;
+														td1.appendChild(td1a)
+
+														td2.innerHTML = c.dir;
+														td3.innerHTML = c.SSL;
+														td4.innerHTML = c.owner;
+														td5.innerHTML = c.group;
+														td6.innerHTML = `<a href="/repage/edithost.html?host=${c.host}" class="btn btn-primary btn-sm">Edit</a> <a onclick="deleteHost('${c.host}')" class="btn btn-danger btn-sm">Delete</a>`;
+
+
+														tr.appendChild(td1);
+														tr.appendChild(td2);
+														tr.appendChild(td3);
+														tr.appendChild(td4);
+														tr.appendChild(td5);
+														tr.appendChild(td6);
+
+														hosts.appendChild(tr);
+													}
+												} else {
+													console.log('Request failed. Returned status of ' + xhr.status);
+													sweetAlert("Error", "There was an error trying to fetch your hosts", "error")
+												}
+											}
+											})()
+									</script>
+								</table>
+							</div>
 						</div>
-					</div>		
+					</div>
 				</div>
-            </div>
-        </div>
+			</div>
+		</div>
+
+		<script>
+			async function deleteHost(host){
+				const username = await localStorage.getItem("username");
+				const password = await localStorage.getItem("password");
+
+				Swal.fire({
+					title: "Are you sure sure?",
+					text: "After deleting the host, it will stop receiving requests!",
+					type: "warning",
+					showCancelButton: !0,
+					confirmButtonColor: "#DD6B55",
+					confirmButtonText: "Yes, delete it!!"
+				}).then(function(e) {
+					if(!e.value) return;
+
+					var xhr = new XMLHttpRequest();
+					xhr.open("POST", "/repage/api/deletehost", true);
+					xhr.setRequestHeader('Content-Type', 'application/json');
+					xhr.send(JSON.stringify({
+						username: username,
+						password: password,
+						host: host
+					}));
+					//log the returned statuses
+					xhr.onload = function() {
+						if (xhr.status === 200) {
+								swal("Deleted!", "The host has been deleted.", "success")
+								document.getElementById(host).remove();
+						} else {
+							console.log('Request failed. Returned status of ' + xhr.status);
+							sweetAlert("Error", xhr.status + " - There was an error trying to delete the host", "error")
+						}
+					}
+
+				})
+
+				
+			}
+		</script>
+
+
+
+
         <!--**********************************
             Content body end
         ***********************************-->
-		
-
 
 		
         <!--**********************************
@@ -272,8 +376,6 @@
     <script src="./vendor/global/global.min.js"></script>
 	<script src="./vendor/chart.js/Chart.bundle.min.js"></script>
 	<script src="vendor/jquery-nice-select/js/jquery.nice-select.min.js"></script>
-
-	<script src="./js/gauge.js" ></script>
 	
 	<!-- Apex Chart -->
 	<script src="./vendor/apexchart/apexchart.js"></script>
@@ -282,8 +384,6 @@
 	
 	<!-- Chart piety plugin files -->
     <script src="./vendor/peity/jquery.peity.min.js"></script>
-	<!-- Dashboard 1 -->
-	<script src="./js/dashboard/dashboard-1.js"></script>
 	
 	<script src="./vendor/owl-carousel/owl.carousel.js"></script>
 	
@@ -293,63 +393,5 @@
 	<!-- SCRIPTS JS-->
 	<script src="./vendor/toastr/js/toastr.min.js"></script>
 	<script src="./js/autolert.js"></script>
-	
-
-	<script>
-		//on page load 
-		window.onload = function() {
-			INFO("Logged In", `Welcome <strong>${localStorage.getItem("username")}</strong>`);
-		}
-	</script>
-	
-   
-	<script>
-		function cardsCenter()
-		{
-			
-			/*  testimonial one function by = owl.carousel.js */
-			
-	
-			
-			jQuery('.card-slider').owlCarousel({
-				loop:true,
-				margin:10,
-				nav:false,
-				//center:true,
-				slideSpeed: 3000,
-				paginationSpeed: 3000,
-				dots: false,
-				navText: ['', ''],
-				responsive:{
-					0:{
-						items:1
-					},
-					576:{
-						items:2
-					},	
-					800:{
-						items:2
-					},			
-					991:{
-						items:2
-					},
-					1200:{
-						items:3
-					},
-					1600:{
-						items:4
-					}
-				}
-			})
-		}
-		
-		jQuery(window).on('load',function(){
-			setTimeout(function(){
-				cardsCenter();
-			}, 1000); 
-		});
-		
-	</script>
-
 </body>
 </html>

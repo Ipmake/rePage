@@ -9776,13 +9776,13 @@ var FullCalendar = (function (exports) {
                     sign = -1;
                 // falls through
                 case 'right':
-                    scrollCache.setScrollLeft(scrollCache.getScrollLeft() + velocity * sign);
+                    scrollCache.setScrollLeft(scrollcache.getScrollLeft() + velocity * sign);
                     break;
                 case 'top':
                     sign = -1;
                 // falls through
                 case 'bottom':
-                    scrollCache.setScrollTop(scrollCache.getScrollTop() + velocity * sign);
+                    scrollCache.setScrollTop(scrollcache.getScrollTop() + velocity * sign);
                     break;
             }
         };
@@ -10027,7 +10027,7 @@ var FullCalendar = (function (exports) {
             var left = this.origRect.left;
             for (var _i = 0, _a = this.scrollCaches; _i < _a.length; _i++) {
                 var scrollCache = _a[_i];
-                left += scrollCache.origScrollLeft - scrollCache.getScrollLeft();
+                left += scrollCache.origScrollLeft - scrollcache.getScrollLeft();
             }
             return left;
         };
@@ -10035,7 +10035,7 @@ var FullCalendar = (function (exports) {
             var top = this.origRect.top;
             for (var _i = 0, _a = this.scrollCaches; _i < _a.length; _i++) {
                 var scrollCache = _a[_i];
-                top += scrollCache.origScrollTop - scrollCache.getScrollTop();
+                top += scrollCache.origScrollTop - scrollcache.getScrollTop();
             }
             return top;
         };
@@ -10043,7 +10043,7 @@ var FullCalendar = (function (exports) {
             var point = { left: pageX, top: pageY };
             for (var _i = 0, _a = this.scrollCaches; _i < _a.length; _i++) {
                 var scrollCache = _a[_i];
-                if (!isIgnoredClipping(scrollCache.getEventTarget()) &&
+                if (!isIgnoredClipping(scrollcache.getEventTarget()) &&
                     !pointInsideRect(point, scrollCache.clientRect)) {
                     return false;
                 }

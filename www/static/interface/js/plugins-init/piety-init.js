@@ -39,7 +39,7 @@ var dlabPiety = function(){
     var handlePietyPie = function(){
 		if(jQuery('span.pie').length > 0 ){
 			$("span.pie").peity("pie", {
-				fill: ['#00a15d', 'rgba(0,161,91, .3)'], 
+				fill: ['#2251F8', 'rgba(0,161,91, .3)'], 
 				width: "100",
 				height: "100"
 			});
@@ -59,7 +59,7 @@ var dlabPiety = function(){
 		if(jQuery('.peity-line').length > 0 ){
 			$(".peity-line").peity("line", {
 				fill: ["rgba(255,167,215,1)"], 
-				stroke: '#00a15d', 
+				stroke: '#2251F8', 
 				width: "100%",
 				height: "100"
 			});
@@ -94,7 +94,7 @@ var dlabPiety = function(){
 	var handlePietyBar = function(){
 		if(jQuery('.bar').length > 0 ){
 			$(".bar").peity("bar", {
-				fill: ["#00a15d", "#FF5E4B", "#3693FF"],  
+				fill: ["#2251F8", "#FF5E4B", "#3693FF"],  
 				width: "100%",
 				height: "100",
 			});
@@ -104,7 +104,7 @@ var dlabPiety = function(){
 	var handlePietyBar1 = function(){
 		if(jQuery('.bar1').length > 0 ){
 			$(".bar1").peity("bar", {
-				fill: ["#00a15d", "#FF5E4B", "#3693FF"],    
+				fill: ["#2251F8", "#FF5E4B", "#3693FF"],    
 				//width: "100%",
 				width: getGraphBlockSize('.bar1'),
 				height: "140"
@@ -115,7 +115,7 @@ var dlabPiety = function(){
 	var handlePietyBarColours1 = function(){
 		if(jQuery('.bar-colours-1').length > 0 ){
 			$(".bar-colours-1").peity("bar", {
-				fill: ["#00a15d", "#FF5E4B", "#3693FF"],  
+				fill: ["#2251F8", "#FF5E4B", "#3693FF"],  
 				width: "100",
 				height: "100"
 			});
@@ -159,7 +159,7 @@ var dlabPiety = function(){
     var handlePietyColours2 = function(){
 		if(jQuery('.pie-colours-2').length > 0 ){
 			$(".pie-colours-2").peity("pie", {
-				fill: ["#00a15d", "#FF5E4B", "#3693FF", "#00a15d", "#EE3C3C"],
+				fill: ["#2251F8", "#FF5E4B", "#3693FF", "#2251F8", "#EE3C3C"],
 				width: "100",
 				height: "100"
 			});

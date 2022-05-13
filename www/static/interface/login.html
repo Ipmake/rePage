@@ -68,6 +68,8 @@
     <script src="./js/dlabnav-init.js"></script>
 	<script src="./js/styleSwitcher.js"></script>
     <script>
+        localStorage.clear();
+
         function login(){
             var username = document.getElementById("username").value;
             var password = document.getElementById("password").value;
@@ -85,8 +87,12 @@
 
                 xhttp.onreadystatechange = function() {
                     if (this.readyState == 4 && this.status == 200) {
+                        var response = JSON.parse(this.responseText);
+
                         localStorage.setItem("username", username);
                         localStorage.setItem("password", password);
+                        localStorage.setItem("group", response.group);
+
                         document.location.href = "/repage/index.html";
                     }
                     else if (this.readyState == 4 && this.status == 401) {

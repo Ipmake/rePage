@@ -10,6 +10,7 @@ module.exports = class {
             this.routes = new enmap()
             this.commands = new enmap()
             this.users = new enmap()
+            this.hosts = new enmap()
             //
             this.init()
 
@@ -20,12 +21,18 @@ module.exports = class {
             return eval(`this.${category}.get('${item}')`)
         }
 
-        set(category, item, value) {
+        async set(category, item, value) {
             log('cache', `CACHE SET ${category} -> ${item} TO ${value}`, 'cache')
             switch (category) {
                 case 'routes':
                     value = value.replaceAll("/", "_")
                     return this.routes.set(item, value)
+                break;
+                
+                default:
+                    eval(`this.${category}.set('${item}', '${value}')`)
+                    console.log(`this.${category}.set('${item}', '${value}')`)
+                    return 
                 break;
             }
             
@@ -35,6 +42,7 @@ module.exports = class {
             this.routes.clear()
             this.commands.clear()
             this.users.clear()
+            this.hosts.clear()
 
             log('system', 'Initializing cache...', 'cache')
             const routeFile = JSON.parse(fs.readFileSync('./config/dynamic/routes.json', 'utf8'))
@@ -60,6 +68,12 @@ module.exports = class {
                 
     
             }
+
+            const hostsfile = JSON.parse(fs.readFileSync('./config/dynamic/hosts.json', 'utf8'))
+    
+            for (let c of hostsfile) {
+                this.hosts.set(c.host, c)
+            }
             
             const commands = fs.readdirSync("./tools/commands/")
             for (let c of commands) {
@@ -81,9 +95,10 @@ module.exports = class {
             }
 
 
-            log('system', `${routeFile.length} routes have been cached`, 'cache')
-            log('system', `${commands.length} commands have been cached.`, 'cache')
-            log('system', `${users.length} useraccounts have been cached.`, 'cache')
+            log('system', `${routeFile.length} route/s have been cached`, 'cache')
+            log('system', `${commands.length} command/s have been cached.`, 'cache')
+            log('system', `${users.length} useraccount/s have been cached.`, 'cache')
+            log('system', `${hostsfile.length} host/s have been cached.`, 'cache')
             log('sysOK', 'Cache initialized', 'cache')
         }
     }

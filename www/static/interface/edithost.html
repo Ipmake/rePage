@@ -33,9 +33,6 @@
 
 	
 </head>
-<script>
-	if(!localStorage.getItem('username') || !localStorage.getItem('password') || !localStorage.getItem('group')) document.location.href = '/repage/login.html';
-</script>
 <body>
 
     <!--*******************
@@ -87,7 +84,7 @@
                     <div class="collapse navbar-collapse justify-content-between">
                         <div class="header-left">
 							<div class="dashboard_bar">
-                                Dashboard
+                                Edit a host
                             </div>
                         </div>
                         <ul class="navbar-nav header-right">
@@ -99,7 +96,7 @@
 										<small class="fs-12 font-w400" id="group"></small>
                                         <script>
 											window.onload = function() {
-												if(!localStorage.getItem("username") || !localStorage.getItem("group")) 
+												if(!localStorage.getItem('username') || !localStorage.getItem('password') || !localStorage.getItem('group'))
 												{
 													swal({
 														title: "Error, username or group invalid",
@@ -203,43 +200,123 @@
 		<!--**********************************
             Content body start
         ***********************************-->
-        <div class="content-body">
-            <!-- row -->
+
+		<div class="content-body">
 			<div class="container-fluid">
 				<div class="row">
-					<div class="col-xl-12">
-						<div class="row">
-							<div class="col-xl-12">
-								<div class="row">
+					<div class="col-12">
+						<div class="card">
+							<div class="card-body">
+									<div class="card-title">
+										<h3 class="text-center">Edit host</h3>
+									</div>
+									<div class="row">
+										<div class="col-md-6 offset-md-3" style="display: flex; color: white; gap: 50px; flex-direction: column; ">
+												<div class="form-group">
+													<label for="hostname">Hostname</label>
+													<input type="text" class="form-control" id="hostname" name="hostname" placeholder="Hostname">
+												</div>
+												<div class="form-group">
+													<label for="directory">Directory in /www/</label>
+													<input type="text" class="form-control" id="directory" name="directory" placeholder="Directory">
+												</div>
+												<div class="form-group">
+													<label for="SSL">SSL</label>
+													<select class="form-control" id="SSL" name="SSL">
+														<option value="1">Yes</option>
+														<option value="0">No</option>
+													</select>
+												</div>
+											
+												<button type="submit" onclick="send()" class="btn btn-primary">Save</button>
 
-
-									<div class="col-xl-6 col-sm-6 col-xxl-6">
-										<div class="card">
-											<div class="card-body" style="display: flex; flex-direction: column; align-items: center; ">
-												<h1 class="text-center">CPU</h1>
-												<div id="gaugeCPU" style="width: 90%; display: flex; align-items: center; justify-content: center; flex-direction: column;"> <div class="gauge" width="200px" height="200px"> <div class="gauge__body"> <div class="gauge__fill"></div> <div class="gauge__cover"></div> </div> </div> </div>
-											</div>
 										</div>
 									</div>
-
-									<div class="col-xl-6 col-sm-6 col-xxl-6">
-										<div class="card">
-											<div class="card-body" style="display: flex; flex-direction: column; align-items: center; ">
-												<h1 class="text-center">Memory</h1>
-												<div id="gaugeMEM" style="width: 90%; display: flex; align-items: center; justify-content: center; flex-direction: column;"> <div class="gauge" width="200px" height="200px"> <div class="gauge__body"> <div class="gauge__fill"></div> <div class="gauge__cover"></div> </div> </div> </div>
-											</div>
-										</div>
-									</div>
-
-
-								</div>
 							</div>
-
 						</div>
-					</div>		
+					</div>
 				</div>
-            </div>
-        </div>
+			</div>
+		</div>
+
+		<script>
+			window.onload = function() {
+				var url = new URL(window.location.href);
+				var args = url.searchParams;
+				var hostname = args.get("host");
+
+				console.log(hostname);
+				
+				//post request to the server
+				var xhr = new XMLHttpRequest();
+				xhr.open("POST", "/repage/api/gethost?host=" + hostname, true);
+				xhr.setRequestHeader('Content-Type', 'application/json');
+				xhr.onreadystatechange = function() {
+					if (this.readyState == 4 && this.status == 200) {
+						var data = JSON.parse(this.responseText);
+						console.log(data);
+						document.getElementById("hostname").value = data.host;
+						document.getElementById("directory").value = data.dir;
+						document.getElementById("SSL").value = data.SSL ? 1 : 0;
+					}
+					else if(this.readyState == 4 && !this.status == 200) sweetAlert("Error", "Something went wrong!!", "error")
+				};
+				xhr.send(JSON.stringify({
+					username: localStorage.getItem("username"),
+					password: localStorage.getItem("password")
+				}));
+
+			}
+
+			function send(){
+				var url = new URL(window.location.href);
+				var args = url.searchParams;
+				var orighost = args.get("host");
+				const hostname = document.getElementById("hostname").value;
+				const directory = document.getElementById("directory").value;
+				const SSL = document.getElementById("SSL").value;
+
+				const username = localStorage.getItem("username");
+				const password = localStorage.getItem("password");
+				
+				if(hostname == "" || directory == "" || SSL == ""){
+					swal("Please fill in all fields")
+				}else{
+					var xhr = new XMLHttpRequest();
+					xhr.open("POST", "/repage/api/edithost", true);
+					xhr.setRequestHeader('Content-Type', 'application/json');
+
+					xhr.send(JSON.stringify({
+						origin: orighost,
+						host: hostname, 
+						dir: directory, 
+						SSL: Boolean(Number(SSL)),
+
+						username: username, 
+						password: password
+					}));
+
+					xhr.onreadystatechange = function(){
+						if(this.readyState == 4 && this.status == 200){
+							const response = this.responseText;
+							swal("Host Edited!!", "The hostname and directory have successfully been edited", "success")
+							window.location.href = "/repage/hosts.html";
+						}
+					}
+
+					xhr.ontimeout = function(){
+						swal("Error", "The request timed out", "error")
+					}
+
+					xhr.onerror = function(){
+						swal("Error", "There was an error with the request", "error")
+					}
+				}
+			}
+		</script>
+						
+		
+
         <!--**********************************
             Content body end
         ***********************************-->
@@ -272,8 +349,6 @@
     <script src="./vendor/global/global.min.js"></script>
 	<script src="./vendor/chart.js/Chart.bundle.min.js"></script>
 	<script src="vendor/jquery-nice-select/js/jquery.nice-select.min.js"></script>
-
-	<script src="./js/gauge.js" ></script>
 	
 	<!-- Apex Chart -->
 	<script src="./vendor/apexchart/apexchart.js"></script>
@@ -282,8 +357,6 @@
 	
 	<!-- Chart piety plugin files -->
     <script src="./vendor/peity/jquery.peity.min.js"></script>
-	<!-- Dashboard 1 -->
-	<script src="./js/dashboard/dashboard-1.js"></script>
 	
 	<script src="./vendor/owl-carousel/owl.carousel.js"></script>
 	
@@ -293,63 +366,5 @@
 	<!-- SCRIPTS JS-->
 	<script src="./vendor/toastr/js/toastr.min.js"></script>
 	<script src="./js/autolert.js"></script>
-	
-
-	<script>
-		//on page load 
-		window.onload = function() {
-			INFO("Logged In", `Welcome <strong>${localStorage.getItem("username")}</strong>`);
-		}
-	</script>
-	
-   
-	<script>
-		function cardsCenter()
-		{
-			
-			/*  testimonial one function by = owl.carousel.js */
-			
-	
-			
-			jQuery('.card-slider').owlCarousel({
-				loop:true,
-				margin:10,
-				nav:false,
-				//center:true,
-				slideSpeed: 3000,
-				paginationSpeed: 3000,
-				dots: false,
-				navText: ['', ''],
-				responsive:{
-					0:{
-						items:1
-					},
-					576:{
-						items:2
-					},	
-					800:{
-						items:2
-					},			
-					991:{
-						items:2
-					},
-					1200:{
-						items:3
-					},
-					1600:{
-						items:4
-					}
-				}
-			})
-		}
-		
-		jQuery(window).on('load',function(){
-			setTimeout(function(){
-				cardsCenter();
-			}, 1000); 
-		});
-		
-	</script>
-
 </body>
 </html>

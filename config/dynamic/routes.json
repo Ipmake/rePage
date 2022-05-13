@@ -1,3 +1,3 @@
 [
-    { "host": "localhost", "dir": "/github", "target": "https://github.com/Ipmake123/rePage"}
+    { "host": "localhost", "dir": "/github", "target": "https://github.com/Ipmake123/rePage", "SSL": true, "enabled": true}
 ]
